@@ -1,0 +1,138 @@
+﻿@model CRUD.Models.estabelecimento
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+
+
+<div class="row">
+    <div class="col">
+        <form asp-action="CriaOuEdita">
+            <div class="container mt-5 form-cadastro">
+                <div class="row">
+                    <div class="col">
+                       
+                        <h1>Cadastro Estabelecimento</h1>
+                        <hr>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-6 ">
+                        <input type="hidden" asp-for="estabelecimentoId"/>
+                        <h2>Nome Fantasia</h2>
+                        <input asp-for="nome" type="text" class="form-control " placeholder="Nome" aria-label="nome" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-sm-6">
+                        <h2>Razão Social</h2>
+                        <input asp-for="razaoSocial" type="text" class="form-control " placeholder="Razão Social" aria-label="razao" aria-describedby="basic-addon1" required>
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-sm-6">
+                        <h2>CNPJ</h2>
+                        <input  asp-for="cnpj" type="text" class="form-control " id="cnpj" placeholder="CNPJ" aria-label="cnpj" aria-describedby="basic-addon1" required onblur="if(!validarCNPJ(this.value)){ $('#checkCnpj').hide();$('#errorMsgCnpj').show() ;this.value='';$('#cnpj').css('border-color','red');$('#errCnpj').show();}else{$('#errorMsgCnpj').hide();$('#cnpj').css('border-color','#9ac894');$('#checkCnpj').show();$('#errCnpj').hide();}">
+                        <p id="errorMsgCnpj" style="display: none;color:red;">CNPJ Invalido</p>
+
+                    </div>
+                    <div class="col mt-5">
+                        <span style="display:none ;" id="errCnpj" class="badge badge-pill badge-danger material-icons">clear</span>
+                        <span style="display:none ;" id="checkCnpj" class="badge badge-pill badge-success material-icons">check</span>
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-sm-6">
+                        <h2>E-Mail</h2>
+                        <input asp-for="email" type="text" class="form-control " id="email" placeholder="E-mail" aria-label="email" aria-describedby="basic-addon1" onblur="if(!validEmail(this.value)){ $('#errorMsgEmail').show() ;this.value='';$('#email').css('border-color','red');$('#checkEmail').hide();$('#errEmail').show();}else{$('#errorMsgEmail').hide();$('#email').css('border-color','#9ac894');$('#checkEmail').show();$('#errEmail').hide();}">
+						 
+                        <p id="errorMsgEmail" style="display: none;color:red;">E-mail Invalido</p>
+                    </div>
+                    <div class="col mt-5">
+                        <span style="display:none ;" id="errEmail" class="badge badge-pill badge-danger material-icons">clear</span>
+                        <span style="display:none ;" id="checkEmail" class="badge badge-pill badge-success material-icons">check</span>
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-6">
+                        <h2>Endereço</h2>
+                        <input asp-for="endereco" type="text" class="form-control " placeholder="Endereço" aria-label="endereco" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-sm-3 ">
+                        <h2>Estado</h2>
+                        <select asp-for="estado" class="custom-select  " id="estadoSelect">
+                            <option selected value="">Estado</option>
+
+                        </select>
+                    </div>
+                    <div class="col-sm ">
+                        <h2>Cidade</h2>
+                        <select asp-for="cidade" class="custom-select  " disabled id="cidadeSelect">
+                            <option selected value="">Selecione o Estado</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-sm-4">
+                        <h2>Telefone</h2>
+                        <input asp-for="telefone"  type="text" class="form-control " id="telefone" placeholder="Telefone" aria-label="telefone" aria-describedby="basic-addon1">
+                        <p id="errorMsgTelefone" style="display: none;color:red;">Telefone Obrigatorio</p>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <h2>Categoria</h2>
+                        <select asp-for="categoria" class="custom-select" id="categoriaSelect">
+                            <option selected>Categoria</option>
+                            <option value="Supermercado">Supermercado</option>
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Borracharia">Borracharia</option>
+                            <option value="Posto">Posto</option>
+                            <option value="Oficina">Oficina</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <h2>Status</h2>
+                        <select asp-for="status" class="custom-select">
+                            <option selected>Status</option>
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4 my-3">
+                        <h2>Agencia</h2>
+                        <input asp-for="agencia" type="text" class="form-control " id="agencia" placeholder="Agencia" aria-label="agencia" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="col-sm-4 my-3 ">
+                        <h2>Conta</h2>
+                        <input asp-for="conta" type="text" class="form-control " id="conta" placeholder="Conta" aria-label="conta" aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="row my-3">
+                    <div class="col-sm-4">
+                        <h2>Data de Cadastro</h2>
+                        <input asp-for="dataCadastro" type="text" class="form-control " value="" id="dataCadastro" placeholder="dd/mm/aaaa" aria-label="dataCadastro " aria-describedby="basic-addon1 " onblur="if(!ValidaData(this.value)){$('#errorMsgData').show();$('#dataCadastro').css('border-color','red');}else{$('#errorMsgData').hide();$('#dataCadastro').css('border-color','#9ac894');}">
+                        <p id="errorMsgData" style="display: none; color: red;">Data Invalida</p>
+                    </div>
+                    <div class="col mt-5">
+                        <button id="btnCadastrar" type="submit" value="Create" class="float-right btn btn-success">Cadastrar</button>
+                        <a asp-action="Index" class="btn  btn-primary float-right mx-2">Voltar</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

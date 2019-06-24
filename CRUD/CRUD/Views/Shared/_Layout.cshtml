@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CRUD</title>
+
+    <environment include="Development">
+
+        <link rel="stylesheet" href="~/css/site.css" />
+
+        <!-- Jquery -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <!-- mask plugin -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js" asp-append-version="true"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <meta charset="UTF-8">
+
+
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </environment>
+
+
+    
+    <script type="text/javascript">
+
+        $(function () {
+
+
+            $("#telefone").mask("(00) 0000-0000");
+            $("#cnpj").mask("00.000.000/0000-00");
+            $("#agencia").mask("AAA-A");
+            $("#conta").mask("AA.AAA-A");
+            $("#dataCadastro").mask("00/00/0000");
+
+
+
+
+
+
+
+            var selectEstados = "";
+            //Select Estados
+            $.ajax({
+                type: 'GET',
+                url: '/json/Estados.json',
+                dataType: 'json',
+
+
+            }).done(function (data) {
+
+                $.each(data, function (key, value) {
+                    selectEstados += '<option value="' + value.ID + '">' + value.Sigla + '</option>';
+                });
+                $('#estadoSelect').html(selectEstados);
+            });
+
+
+
+
+            //Select Cidades
+            $('#estadoSelect').change(function () {
+                $('#cidadeSelect').html('');
+
+                var id = $('#estadoSelect').val();
+
+                var expression = new RegExp(id, "i");
+                $.getJSON('/json/Cidades.json', function (data) {
+
+                    var selectCidades = '';
+                    $.each(data, function (key, value) {
+                        if (value.Estado.search(expression) != -1) {
+                            selectCidades += '<option value="' + value.Nome + '">' + value.Nome + '</option>';
+                        }
+
+                    });
+
+
+                    $('#cidadeSelect').removeAttr('disabled');
+                    $('#cidadeSelect').html(selectCidades);
+                });
+
+
+
+
+
+
+            });
+
+            //Verificacao Mercado
+            $('#categoriaSelect').change(function () {
+
+                if ($('#categoriaSelect').val() == 'Supermercado' || $('#categoriaSelect').val() == 'supermercado') {
+                    $('#errorMsgTelefone').show();
+                } else {
+                    $('#errorMsgTelefone').hide();
+                }
+
+            });
+
+
+
+
+        });
+
+
+
+
+
+
+        function validarCNPJ(cnpj) {
+
+            cnpj = cnpj.replace(/[^\d]+/g, '');
+
+            if (cnpj == '') return false;
+
+            if (cnpj.length != 14)
+                return false;
+
+            // Elimina CNPJs invalidos conhecidos
+            if (cnpj == "00000000000000" ||
+                cnpj == "11111111111111" ||
+                cnpj == "22222222222222" ||
+                cnpj == "33333333333333" ||
+                cnpj == "44444444444444" ||
+                cnpj == "55555555555555" ||
+                cnpj == "66666666666666" ||
+                cnpj == "77777777777777" ||
+                cnpj == "88888888888888" ||
+                cnpj == "99999999999999")
+                return false;
+
+            // Valida DVs
+            tamanho = cnpj.length - 2
+            numeros = cnpj.substring(0, tamanho);
+            digitos = cnpj.substring(tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0))
+                return false;
+
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1))
+                return false;
+
+            return true;
+
+        }
+        function ValidaData(data) {
+            reg = /[^\d\/\.]/gi;                  // Mascara = dd/mm/aaaa | dd.mm.aaaa
+            var valida = data.replace(reg, '');    // aplica mascara e valida só numeros
+            if (valida && valida.length == 10) {  // é válida, então ;)
+                var ano = data.substr(6),
+                    mes = data.substr(3, 2),
+                    dia = data.substr(0, 2),
+                    M30 = ['04', '06', '09', '11'],
+                    v_mes = /(0[1-9])|(1[0-2])/.test(mes),
+                    v_ano = /(19[1-9]\d)|(20\d\d)|2100/.test(ano),
+                    rexpr = new RegExp(mes),
+                    fev29 = ano % 4 ? 28 : 29;
+
+                if (v_mes && v_ano) {
+                    if (mes == '02') return (dia >= 1 && dia <= fev29);
+                    else if (rexpr.test(M30)) return /((0[1-9])|([1-2]\d)|30)/.test(dia);
+                    else return /((0[1-9])|([1-2]\d)|3[0-1])/.test(dia);
+                }
+            }
+            return false                          // se inválida :(
+        }
+
+        function validEmail(value) {
+            var valid = true;
+            var emails = value.replace(';', ',').split(",");
+            if (value == '') {
+                return false;
+            }
+            jQuery.each(emails, function () {
+                if (jQuery.trim(this) != '') {
+                    if (!jQuery.trim(this).match(/^([\w\.\-]+)@@([\w\-]+)((\.(\w){2,3})+)$/i))
+                        valid = false;
+                }
+
+            });
+            return valid;
+        }
+        function openForm() {
+            $('.form-cadastro').show();
+        }
+        function closeForm() {
+            $('.form-cadastro').hide();
+        }
+
+
+
+    </script>
+  
+
+
+
+
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a asp-area="" asp-controller="estabelecimento" asp-action="Index" class="navbar-brand">CRUD</a>
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="nav navbar-nav">
+                <li><a class="nav-item nav-link active" asp-area="" asp-controller="estabelecimento" asp-action="Index">Home</a></li>
+
+            </ul>
+        </div>
+
+    </nav>
+
+    <partial name="_CookieConsentPartial" />
+
+    <div class="container body-content">
+
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2019 - CRUD</p>
+        </footer>
+    </div>
+
+    @*<environment include="development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jquery"
+                crossorigin="anonymous"
+                integrity="sha384-tsqfqpereu7zlhbv2vzlau7zcov+rxbylf2cqb8txi/8azajjp4bqd+v6d5igvkt">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jquery && window.jquery.fn && window.jquery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-aj21ojlmxnl5uyil/xnwtmqvzermzh2w8c5crvpzpu8y5baptppsuukhzxn0vxhd">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>*@
+
+    @RenderSection("Scripts", required: false)
+    
+</body>
+</html>

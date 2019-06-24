@@ -1,0 +1,62 @@
+﻿@model IEnumerable<CRUD.Models.estabelecimento>
+
+@{
+    ViewData["Title"] = "Index";
+}
+    
+    <div class="row mt-5">
+        <div class="col">
+            <h2>Estabelecimentos</h2>
+            <a asp-action="CriaOuEdita" class="btn btn-lg btn-success float-right">Estabelecimento</a>
+        </div>
+        <div class="col-md-12 mt-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.razaoSocial)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.nome)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.categoria)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.status)
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.razaoSocial)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.nome)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.categoria)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.status)
+                            </td>
+
+                            <td>
+                                <a asp-action="CriaOuEdita" asp-route-id="@item.estabelecimentoId"><i class="material-icons">create</i></a> |
+                                
+                                <a asp-action="Delete" asp-route-id="@item.estabelecimentoId"><i style="color:red;" class="material-icons">delete</i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
